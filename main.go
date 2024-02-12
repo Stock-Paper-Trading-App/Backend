@@ -1,27 +1,21 @@
 package main
 
 import (
-	"StockPaperTradingApp/controllers"
 	"StockPaperTradingApp/db"
+	"StockPaperTradingApp/routes"
 
 	"github.com/gin-gonic/gin"
-)
-
-var (
-	userController controllers.UserController = controllers.New()
 )
 
 func main() {
 	server := gin.Default()
 	db.ConnectToDB()
 
-	server.GET("/register", func(ctx *gin.Context) {
-		ctx.JSON(userController.Register(ctx))
-	})
-
-	server.GET("/login", func(ctx *gin.Context) {
-		ctx.JSON(userController.Login(ctx))
-	})
+	auth := server.Group("/auth")
+	{
+		auth.POST("/register", routes.RegisterEndpoint)
+		auth.GET("/login", routes.LoginEnpdpoint)
+	}
 
 	server.Run("localhost:8080")
 }
