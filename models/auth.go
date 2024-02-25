@@ -36,9 +36,8 @@ func (u *User) CreateJWT() (string, error) {
 	encriptionKey := os.Getenv("JWT_ENCRIPTION_KEY")
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
-			"id":       u.ID,
-			"username": u.Email,
-			"exp":      time.Now().Add(time.Hour * 24).Unix(),
+			"id":  u.ID,
+			"exp": time.Now().Add(time.Hour * 24).Unix(),
 		})
 	tokenString, err := token.SignedString([]byte(encriptionKey))
 
