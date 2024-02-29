@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	userController controllers.UserController = controllers.New()
+	userController controllers.UserController = controllers.Auth()
 )
 
 // Used to create a user.
