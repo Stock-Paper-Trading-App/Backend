@@ -27,5 +27,12 @@ func main() {
 		holdings.DELETE("/:id", routes.DeleteHoldingsEndpoint)
 	}
 
+	activity := server.Group("/activity").Use(middlewares.Authentication)
+	{
+		activity.POST("/", routes.CreateHoldingsEndpoint)
+		activity.GET("/", routes.GetAllHoldingsEndpoint)
+		activity.GET("/:id", routes.GetHoldingsEndpoint)
+	}
+
 	server.Run("localhost:8080")
 }

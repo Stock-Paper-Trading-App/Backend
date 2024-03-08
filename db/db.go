@@ -34,3 +34,7 @@ func GetUserCollection() *mongo.Collection {
 func GetHoldingsCollection() *mongo.Collection {
 	return client.Database("StockPaperTradingApp").Collection("Holdings")
 }
+
+func GetActivityCollection() *mongo.Collection {
+	return client.Database("StockPaperTradingApp").Collection("Activity")
+}
