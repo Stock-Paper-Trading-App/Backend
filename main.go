@@ -29,9 +29,14 @@ func main() {
 
 	activity := server.Group("/activity").Use(middlewares.Authentication)
 	{
-		activity.POST("/", routes.CreateHoldingsEndpoint)
-		activity.GET("/", routes.GetAllHoldingsEndpoint)
-		activity.GET("/:id", routes.GetHoldingsEndpoint)
+		activity.POST("/", routes.CreateActivityEndpoint)
+		activity.GET("/", routes.GetAllActivityEndpoint)
+		activity.GET("/:id", routes.GetActivityEndpoint)
+	}
+
+	networth := server.Group("/networth").Use(middlewares.Authentication)
+	{
+		networth.GET("/", routes.GetAllNetworthEndpoint)
 	}
 
 	server.Run("localhost:8080")
