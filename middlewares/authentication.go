@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"errors"
 	"net/http"
 	"os"
 	"time"
@@ -18,17 +17,23 @@ func Authentication(ctx *gin.Context) {
 		return []byte(os.Getenv("JWT_ENCRIPTION_KEY")), nil
 	})
 	if err != nil {
-		ctx.AbortWithError(http.StatusUnauthorized, errors.New("failed to validate token"))
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "failed to validate token"})
+		ctx.Abort()
+		return
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if ok && token.Valid {
 		// check if the token expires or not
-		if float64(time.Now().Unix()) > float64(claims["exp"].(int64)) {
-			ctx.AbortWithError(http.StatusUnauthorized, errors.New("token has expired"))
+		if float64(time.Now().Unix()) > claims["exp"].(float64) {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "token has expired"})
+			ctx.Abort()
+			return
 		}
 	} else {
-		ctx.AbortWithError(http.StatusUnauthorized, errors.New("something went wrong with token claims"))
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "something went wrong with token claims"})
+		ctx.Abort()
+		return
 	}
 
 	ctx.Set("user_id", claims["id"])

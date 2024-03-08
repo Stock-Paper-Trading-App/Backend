@@ -13,19 +13,19 @@ import (
 
 // methods
 type UserController interface {
-	Register(*gin.Context) (int, gin.H)
+	Register(ctx *gin.Context) (int, gin.H)
 	Login(ctx *gin.Context) (int, gin.H)
 }
 
 // varables
-type controller struct{}
+type authController struct{}
 
 // contructor
-func New() UserController {
-	return &controller{}
+func Auth() UserController {
+	return &authController{}
 }
 
-func (c *controller) Register(ctx *gin.Context) (int, gin.H) {
+func (c *authController) Register(ctx *gin.Context) (int, gin.H) {
 	var user models.User
 	ctx.BindJSON(&user)
 	if user.FirstName == "" || user.LastName == "" || user.Email == "" || user.Password == "" {
@@ -44,6 +44,7 @@ func (c *controller) Register(ctx *gin.Context) (int, gin.H) {
 	}
 	// Save user
 	user.HashPassword()
+	user.Cash = 50000
 	result, err := db.GetUserCollection().InsertOne(context.TODO(), user)
 	if err != nil {
 		return http.StatusInternalServerError, gin.H{
@@ -65,11 +66,12 @@ func (c *controller) Register(ctx *gin.Context) (int, gin.H) {
 			"firstname": user.FirstName,
 			"lastname":  user.LastName,
 			"email":     user.Email,
+			"cash":      user.Cash,
 		},
 	}
 }
 
-func (c *controller) Login(ctx *gin.Context) (int, gin.H) {
+func (c *authController) Login(ctx *gin.Context) (int, gin.H) {
 	var user models.User
 	ctx.BindJSON(&user)
 	if user.Email == "" || user.Password == "" {
@@ -85,7 +87,7 @@ func (c *controller) Login(ctx *gin.Context) (int, gin.H) {
 			"message": "Incorrect Credentials",
 		}
 	}
-	token, err := user.CreateJWT()
+	token, err := resultUser.CreateJWT()
 	if err != nil {
 		return http.StatusInternalServerError, gin.H{
 			"message": "Something went wrong creating JWT token",
@@ -98,6 +100,7 @@ func (c *controller) Login(ctx *gin.Context) (int, gin.H) {
 			"firstname": resultUser.FirstName,
 			"lastname":  resultUser.LastName,
 			"email":     resultUser.Email,
+			"cash":      resultUser.Cash,
 		},
 	}
 }

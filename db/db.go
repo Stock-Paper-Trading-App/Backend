@@ -30,3 +30,7 @@ func ConnectToDB() {
 func GetUserCollection() *mongo.Collection {
 	return client.Database("StockPaperTradingApp").Collection("User")
 }
+
+func GetHoldingsCollection() *mongo.Collection {
+	return client.Database("StockPaperTradingApp").Collection("Holdings")
+}
