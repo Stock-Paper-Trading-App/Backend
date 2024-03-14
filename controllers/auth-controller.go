@@ -28,7 +28,7 @@ func Auth() UserController {
 func (c *authController) Register(ctx *gin.Context) (int, gin.H) {
 	var user models.User
 	ctx.BindJSON(&user)
-	if user.FirstName == "" || user.LastName == "" || user.Email == "" || user.Password == "" {
+	if user.UserName == "" || user.Email == "" || user.Password == "" {
 		return http.StatusBadRequest, gin.H{
 			"message": "All fields must be filled",
 		}
@@ -63,10 +63,9 @@ func (c *authController) Register(ctx *gin.Context) (int, gin.H) {
 	return http.StatusCreated, gin.H{
 		"token": token,
 		"user": gin.H{
-			"firstname": user.FirstName,
-			"lastname":  user.LastName,
-			"email":     user.Email,
-			"cash":      user.Cash,
+			"username": user.UserName,
+			"email":    user.Email,
+			"cash":     user.Cash,
 		},
 	}
 }
@@ -97,10 +96,9 @@ func (c *authController) Login(ctx *gin.Context) (int, gin.H) {
 	return http.StatusOK, gin.H{
 		"token": token,
 		"user": gin.H{
-			"firstname": resultUser.FirstName,
-			"lastname":  resultUser.LastName,
-			"email":     resultUser.Email,
-			"cash":      resultUser.Cash,
+			"username": resultUser.UserName,
+			"email":    resultUser.Email,
+			"cash":     resultUser.Cash,
 		},
 	}
 }

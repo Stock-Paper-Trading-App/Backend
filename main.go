@@ -11,11 +11,12 @@ import (
 func main() {
 	server := gin.Default()
 	db.ConnectToDB()
+	server.Use(middlewares.CORSMiddleware())
 
 	auth := server.Group("/auth")
 	{
 		auth.POST("/register", routes.RegisterEndpoint)
-		auth.GET("/login", routes.LoginEnpdpoint)
+		auth.POST("/login", routes.LoginEnpdpoint)
 	}
 
 	holdings := server.Group("/holdings").Use(middlewares.Authentication)
