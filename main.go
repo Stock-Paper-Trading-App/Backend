@@ -1,17 +1,25 @@
 package main
 
 import (
+	"StockPaperTradingApp/controllers"
 	"StockPaperTradingApp/db"
 	"StockPaperTradingApp/middlewares"
 	"StockPaperTradingApp/routes"
 
 	"github.com/gin-gonic/gin"
+	//  https://pkg.go.dev/github.com/robfig/cron#hdr-Usage
+	"github.com/robfig/cron"
 )
 
 func main() {
 	server := gin.Default()
 	db.ConnectToDB()
 	server.Use(middlewares.CORSMiddleware())
+
+	// updates networth for all user at 4:30:00 everyday
+	c := cron.New()
+	c.AddFunc("0 30 4 * * *", controllers.UpdateNetworths)
+	c.Start()
 
 	auth := server.Group("/auth")
 	{
@@ -36,9 +44,12 @@ func main() {
 		activity.GET("/:id", routes.GetActivityEndpoint)
 	}
 
-	networth := server.Group("/networth").Use(middlewares.Authentication)
+	finance := server.Group("/api").Use(middlewares.Authentication)
 	{
-		networth.GET("/", routes.GetAllNetworthEndpoint)
+		finance.GET("/autocomplete", routes.AutoCompleteEndpoint)
+		finance.GET("/trending", routes.TrendingEndpoint)
+		finance.GET("/dashboard", routes.DashBoardEndpoint)
+		finance.GET("/stock", routes.StockInformationEndpoint)
 	}
 
 	server.Run("localhost:8080")
