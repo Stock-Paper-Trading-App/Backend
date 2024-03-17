@@ -15,6 +15,7 @@ import (
 type UserController interface {
 	Register(ctx *gin.Context) (int, gin.H)
 	Login(ctx *gin.Context) (int, gin.H)
+	LoginWithAuth(ctx *gin.Context) (int, gin.H)
 }
 
 // varables
@@ -99,6 +100,25 @@ func (c *authController) Login(ctx *gin.Context) (int, gin.H) {
 			"username": resultUser.UserName,
 			"email":    resultUser.Email,
 			"cash":     resultUser.Cash,
+		},
+	}
+}
+
+func (c *authController) LoginWithAuth(ctx *gin.Context) (int, gin.H) {
+	resId, _ := ctx.Get("user_id")
+	id, _ := primitive.ObjectIDFromHex(resId.(string))
+
+	var resUser models.User
+	filter := bson.D{{Key: "_id", Value: id}}
+	db.GetUserCollection().FindOne(context.TODO(), filter).Decode(&resUser)
+
+	token, _ := resUser.CreateJWT()
+	return http.StatusOK, gin.H{
+		"token": token,
+		"user": gin.H{
+			"username": resUser.UserName,
+			"email":    resUser.Email,
+			"cash":     resUser.Cash,
 		},
 	}
 }

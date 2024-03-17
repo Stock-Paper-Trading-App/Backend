@@ -23,3 +23,8 @@ func RegisterEndpoint(ctx *gin.Context) {
 func LoginEnpdpoint(ctx *gin.Context) {
 	ctx.JSON(userController.Login(ctx))
 }
+
+// same with login but only requires token in header to login
+func LoginWithTokenEnpdpoint(ctx *gin.Context) {
+	ctx.JSON(userController.LoginWithAuth(ctx))
+}

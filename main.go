@@ -17,6 +17,7 @@ func main() {
 	{
 		auth.POST("/register", routes.RegisterEndpoint)
 		auth.POST("/login", routes.LoginEnpdpoint)
+		auth.GET("/loginAuthToken", middlewares.Authentication, routes.LoginWithTokenEnpdpoint)
 	}
 
 	holdings := server.Group("/holdings").Use(middlewares.Authentication)
