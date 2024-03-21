@@ -16,7 +16,7 @@ type User struct {
 	UserName string             `json:"username,omitempty" bson:"username,omitempty"`
 	Email    string             `json:"email,omitempty" bson:"email,omitempty"`
 	Password string             `json:"password,omitempty" bson:"password,omitempty"`
-	Cash     int                `json:"cash,omitempty" bson:"cash,omitempty"`
+	Cash     float64            `json:"cash,omitempty" bson:"cash,omitempty"`
 }
 
 func (u *User) HashPassword() {
