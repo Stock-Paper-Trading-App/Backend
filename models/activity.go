@@ -8,9 +8,8 @@ type Activity struct {
 	CompanyName  string             `json:"companyName,omitempty" bson:"companyName,omitempty"`
 	Quantity     int                `json:"quantity,omitempty" bson:"quantity,omitempty"`
 	Side         string             `json:"side,omitempty" bson:"side,omitempty"`
-	Price        int                `json:"price,omitempty" bson:"price,omitempty"`
+	Price        float64            `json:"price,omitempty" bson:"price,omitempty"`
 	Initiated_on primitive.DateTime `json:"initiated_on,omitempty" bson:"initiated_on,omitempty"`
-	Description  string             `json:"description,omitempty" bson:"description,omitempty"`
 	User_id      primitive.ObjectID `json:"user_id,omitempty" bson:"user_id,omitempty"`
 }
 

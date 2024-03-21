@@ -18,7 +18,7 @@ func main() {
 
 	// updates networth for all user at 4:30:00 everyday
 	c := cron.New()
-	c.AddFunc("0 30 4 * * *", controllers.UpdateNetworths)
+	c.AddFunc("0 30 4 * * *", controllers.Helper().UpdateNetworths)
 	c.Start()
 
 	auth := server.Group("/auth")
@@ -44,7 +44,7 @@ func main() {
 		activity.GET("/:id", routes.GetActivityEndpoint)
 	}
 
-	finance := server.Group("/api").Use(middlewares.Authentication)
+	finance := server.Group("/finance").Use(middlewares.Authentication)
 	{
 		finance.GET("/autocomplete", routes.AutoCompleteEndpoint)
 		finance.GET("/trending", routes.TrendingEndpoint)
@@ -52,5 +52,11 @@ func main() {
 		finance.GET("/stock", routes.StockInformationEndpoint)
 	}
 
+	api := server.Group("/api").Use(middlewares.Authentication)
+	{
+		api.POST("/buyStock", routes.BuyStockEndpoint)
+		api.POST("/sellStock", routes.SellStockEndpoint)
+		api.GET("/getAllData", routes.GetAllDataEndpoint)
+	}
 	server.Run("localhost:8080")
 }

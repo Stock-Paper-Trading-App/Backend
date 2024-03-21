@@ -32,7 +32,7 @@ func (c *activityController) CreateActivity(ctx *gin.Context) (int, gin.H) {
 	var activity models.Activity
 	ctx.BindJSON(&activity)
 
-	if activity.CompanyName == "" || activity.Quantity == 0 || activity.Symbol == "" || activity.Side == "" || activity.Price == 0 || activity.Description == "" {
+	if activity.CompanyName == "" || activity.Quantity == 0 || activity.Symbol == "" || activity.Side == "" || activity.Price == 0 {
 		return http.StatusBadRequest, gin.H{
 			"message": "All fields must be filled",
 		}
