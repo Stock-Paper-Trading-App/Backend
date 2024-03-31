@@ -197,7 +197,7 @@ func (c *apiController) GetAllData(ctx *gin.Context) (int, gin.H) {
 	cursorHoldings.All(context.TODO(), &holdings)
 
 	// Get all activity
-	cursorActivity, _ := db.GetHoldingsCollection().Find(context.TODO(), userilter, options.Find())
+	cursorActivity, _ := db.GetActivityCollection().Find(context.TODO(), userilter, options.Find())
 	var activities []models.Activity
 	cursorActivity.All(context.TODO(), &activities)
 
@@ -219,8 +219,12 @@ func (c *apiController) GetAllData(ctx *gin.Context) (int, gin.H) {
 	// get networth
 	filter := bson.D{{Key: "user_id", Value: userId}}
 	cursor, _ := db.GetNetworthCollection().Find(context.TODO(), filter, options.Find().SetSort(bson.D{{Key: "initiated_on", Value: -1}}))
-	var netWorthList []models.Networth
-	cursor.All(context.TODO(), &netWorthList)
+	var netWorthModelList []models.Networth
+	cursor.All(context.TODO(), &netWorthModelList)
+	var networthList []float64
+	for _, h := range netWorthModelList {
+		networthList = append(networthList, h.Networth)
+	}
 
 	// Get holdings and turn to symbol : quant
 	var listOfSymbols []string
@@ -251,8 +255,7 @@ func (c *apiController) GetAllData(ctx *gin.Context) (int, gin.H) {
 		rawUrl := baseURL + "/v11/finance/quoteSummary/" + symbol + "?lang=en&region=US&modules=assetProfile"
 		result := c.helper.SendRequest(rawUrl)
 		sector := result["quoteSummary"].(map[string]any)["result"].([]any)[0].(map[string]any)["assetProfile"].(map[string]any)["sector"].(string)
-		percentage := symbolToWorth[symbol] / assetsWorth
-		SectorToPercentage[sector] += (percentage * 100)
+		SectorToPercentage[sector] += symbolToWorth[symbol]
 	}
 
 	return http.StatusOK, gin.H{
@@ -265,7 +268,7 @@ func (c *apiController) GetAllData(ctx *gin.Context) (int, gin.H) {
 			"performaceGraph": gin.H{
 				"timeStamp":    snpRes["^GSPC"].(map[string]any)["timestamp"],
 				"snpPrice":     snpRes["^GSPC"].(map[string]any)["close"],
-				"netWorthList": netWorthList,
+				"netWorthList": networthList,
 			},
 		},
 	}
