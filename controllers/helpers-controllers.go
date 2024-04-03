@@ -70,8 +70,7 @@ func (c *helperController) GetStockInformation(symbols []string) []any {
 	for _, queryArray := range quriesList {
 		query := strings.Join(queryArray, ",")
 		encodedquery := url.PathEscape(query)
-		rawURL += encodedquery
-		var res = c.SendRequest(rawURL)
+		var res = c.SendRequest(rawURL + encodedquery)
 		information := res["quoteResponse"].(map[string]any)["result"].([]any)
 		results = append(results, information...)
 	}
