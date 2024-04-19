@@ -6,6 +6,7 @@ import (
 	"context"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -18,6 +19,7 @@ type FinanceController interface {
 	GetTrending(ctx *gin.Context) (int, gin.H)
 	GetStockPageInformation(ctx *gin.Context) (int, gin.H)
 	GetDashboardInformation(ctx *gin.Context) (int, gin.H)
+	GetStockInformation(ctx *gin.Context) (int, gin.H)
 }
 
 // varables
@@ -136,5 +138,19 @@ func (c *financeController) GetStockPageInformation(ctx *gin.Context) (int, gin.
 	// finish when we decide what to include (SPTA-38)
 
 	return 200, gin.H{}
+}
 
+func (c *financeController) GetStockInformation(ctx *gin.Context) (int, gin.H) {
+	var queries = ctx.Request.URL.Query()
+	var query = queries["stocks"]
+	if len(query) != 1 {
+		return http.StatusBadRequest, gin.H{
+			"error": "Must have one value assigned to query in parameter",
+		}
+	}
+	stocks := strings.Split(query[0], ",")
+	results := c.helper.GetStockInformation(stocks)
+	return http.StatusOK, gin.H{
+		"res": results,
+	}
 }

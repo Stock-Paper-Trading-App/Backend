@@ -121,7 +121,6 @@ func (c *apiController) SellStock(ctx *gin.Context) (int, gin.H) {
 			"message": "Must give quantity amount",
 		}
 	}
-	fmt.Println(userId)
 	// check if person has stock
 	var holding models.Holdings
 	holdingsFilter := bson.D{{Key: "user_id", Value: userId}, {Key: "symbol", Value: requestBody.Symbol}}
@@ -182,22 +181,25 @@ func (c *apiController) SellStock(ctx *gin.Context) (int, gin.H) {
 		User_id:      userId,
 	}
 	db.GetActivityCollection().InsertOne(context.TODO(), activity)
-	return 200, gin.H{}
+
+	return 200, gin.H{
+		"message": "successfully Sold",
+	}
 }
 
 // dashboard, trending, acitivity, holdings
 func (c *apiController) GetAllData(ctx *gin.Context) (int, gin.H) {
 	userIdHex, _ := ctx.Get("user_id")
 	userId, _ := primitive.ObjectIDFromHex(userIdHex.(string))
-	userilter := bson.D{{Key: "user_id", Value: userId}}
+	userFilter := bson.D{{Key: "user_id", Value: userId}}
 
 	// Get all holdings
-	cursorHoldings, _ := db.GetHoldingsCollection().Find(context.TODO(), userilter, options.Find())
+	cursorHoldings, _ := db.GetHoldingsCollection().Find(context.TODO(), userFilter, options.Find())
 	var holdings []models.Holdings
 	cursorHoldings.All(context.TODO(), &holdings)
 
 	// Get all activity
-	cursorActivity, _ := db.GetActivityCollection().Find(context.TODO(), userilter, options.Find())
+	cursorActivity, _ := db.GetActivityCollection().Find(context.TODO(), userFilter, options.Find())
 	var activities []models.Activity
 	cursorActivity.All(context.TODO(), &activities)
 
@@ -258,7 +260,12 @@ func (c *apiController) GetAllData(ctx *gin.Context) (int, gin.H) {
 		SectorToPercentage[sector] += symbolToWorth[symbol]
 	}
 
+	// get user
+	var user models.User
+	db.GetUserCollection().FindOne(context.TODO(), bson.D{{Key: "_id", Value: userId}}).Decode(&user)
+
 	return http.StatusOK, gin.H{
+		"user":       user,
 		"holdings":   holdings,
 		"activities": activities,
 		"trending":   trendingResults,
