@@ -22,6 +22,10 @@ func DashBoardEndpoint(ctx *gin.Context) {
 	ctx.JSON(financeController.GetDashboardInformation(ctx))
 }
 
-func StockInformationEndpoint(ctx *gin.Context) {
+func StockPageInformationEndpoint(ctx *gin.Context) {
 	ctx.JSON(financeController.GetStockPageInformation(ctx))
+}
+
+func StockInformationEndpoint(ctx *gin.Context) {
+	ctx.JSON(financeController.GetStockInformation(ctx))
 }

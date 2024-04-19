@@ -50,6 +50,7 @@ func main() {
 		finance.GET("/trending", routes.TrendingEndpoint)
 		finance.GET("/dashboard", routes.DashBoardEndpoint)
 		finance.GET("/stock", routes.StockInformationEndpoint)
+		finance.GET("/stockPage", routes.StockPageInformationEndpoint)
 	}
 
 	api := server.Group("/api").Use(middlewares.Authentication)
