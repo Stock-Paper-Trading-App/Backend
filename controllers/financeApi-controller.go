@@ -66,7 +66,6 @@ func (c *financeController) GetTrending(ctx *gin.Context) (int, gin.H) {
 	}
 }
 
-// break down
 func (c *financeController) GetDashboardInformation(ctx *gin.Context) (int, gin.H) {
 	// snp performace - sector info - assets worth (holdings stock prices * holding quantity)  - networth
 	res, _ := ctx.Get("user_id")
@@ -129,15 +128,37 @@ func (c *financeController) GetDashboardInformation(ctx *gin.Context) (int, gin.
 
 func (c *financeController) GetStockPageInformation(ctx *gin.Context) (int, gin.H) {
 	var queries = ctx.Request.URL.Query()
-	var query = queries["query"]
+	var query = queries["stock"]
 	if len(query) != 1 {
 		return http.StatusBadRequest, gin.H{
 			"error": "Must have one value assigned to query in parameter",
 		}
 	}
-	// finish when we decide what to include (SPTA-38)
 
-	return 200, gin.H{}
+	// get stock data
+	stocks := strings.Split(query[0], ",")
+	stockInformation := c.helper.GetStockInformation(stocks)
+
+	// get company info
+	url := baseURL + "/v11/finance/quoteSummary/" + query[0] + "?lang=en&region=US&modules=assetProfile"
+	var companyInfoResult = c.helper.SendRequest(url)
+
+	// get chart data
+	ranges := [8]string{"1d", "5d", "1mo", "6mo", "ytd", "1y", "5y", "max"}
+	intervals := [8]string{"5m", "15m", "1d", "1d", "1d", "1d", "1wk", "1wk"}
+	print(query[0])
+	chartIntervals := make(map[string]any)
+	for i := 0; i < 8; i++ {
+		chartURL := baseURL + "/v8/finance/chart/" + query[0] + "?range=" + ranges[i] + "&region=US&interval=" + intervals[i] + "&lang=en&events=div%2Csplit"
+		result := c.helper.SendRequest(chartURL)
+		chartIntervals[ranges[i]] = result
+	}
+
+	return 200, gin.H{
+		"stockInformation":   stockInformation,
+		"companyInformation": companyInfoResult,
+		"chartIntervals":     chartIntervals,
+	}
 }
 
 func (c *financeController) GetStockInformation(ctx *gin.Context) (int, gin.H) {
