@@ -146,7 +146,6 @@ func (c *financeController) GetStockPageInformation(ctx *gin.Context) (int, gin.
 	// get chart data
 	ranges := [8]string{"1d", "5d", "1mo", "6mo", "ytd", "1y", "5y", "max"}
 	intervals := [8]string{"5m", "15m", "1d", "1d", "1d", "1d", "1wk", "1wk"}
-	print(query[0])
 	chartIntervals := make(map[string]any)
 	for i := 0; i < 8; i++ {
 		chartURL := baseURL + "/v8/finance/chart/" + query[0] + "?range=" + ranges[i] + "&region=US&interval=" + intervals[i] + "&lang=en&events=div%2Csplit"

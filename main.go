@@ -6,7 +6,9 @@ import (
 	"StockPaperTradingApp/middlewares"
 	"StockPaperTradingApp/routes"
 
+	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
+
 	//  https://pkg.go.dev/github.com/robfig/cron#hdr-Usage
 	"github.com/robfig/cron"
 )
@@ -59,5 +61,7 @@ func main() {
 		api.POST("/sellStock", routes.SellStockEndpoint)
 		api.GET("/getAllData", routes.GetAllDataEndpoint)
 	}
+
+	server.Use(static.Serve("/", static.LocalFile("./build", true)))
 	server.Run("localhost:8080")
 }

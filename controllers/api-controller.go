@@ -4,7 +4,6 @@ import (
 	"StockPaperTradingApp/db"
 	"StockPaperTradingApp/models"
 	"context"
-	"fmt"
 	"net/http"
 	"net/url"
 	"time"
@@ -89,7 +88,6 @@ func (c *apiController) BuyStock(ctx *gin.Context) (int, gin.H) {
 	holdingsFilter := bson.D{{Key: "user_id", Value: userId}, {Key: "symbol", Value: requestBody.Symbol}}
 	db.GetHoldingsCollection().FindOne(context.TODO(), holdingsFilter).Decode(&holding)
 	// if holding exist, update holdings
-	fmt.Println(holding)
 	if holding.Symbol == requestBody.Symbol {
 		updateHolding := bson.D{{Key: "$set", Value: bson.D{{Key: "Quantity", Value: holding.Quantity + requestBody.Quantity}}}}
 		db.GetHoldingsCollection().UpdateOne(context.TODO(), holdingsFilter, updateHolding)
@@ -125,7 +123,6 @@ func (c *apiController) SellStock(ctx *gin.Context) (int, gin.H) {
 	var holding models.Holdings
 	holdingsFilter := bson.D{{Key: "user_id", Value: userId}, {Key: "symbol", Value: requestBody.Symbol}}
 	db.GetHoldingsCollection().FindOne(context.TODO(), holdingsFilter).Decode(&holding)
-	fmt.Println(holding)
 	if holding.CompanyName == "" {
 		return http.StatusBadRequest, gin.H{
 			"message": "user does not own stock",
